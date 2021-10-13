@@ -96,9 +96,28 @@ class VBPR(nn.Module):
         return th.sum(embedd.pow(2).sum(1) / 2.0)
 
     def predict(self, users, items):
-        # (n_eval_users, dim_embed_latent)
-        embed_user = self.embed_user(users)
-        # (n_eval_items, dim_embed_latent)
-        embed_item = self.embed_item(items)
-        # (n_eval_users, n_eval_items)
-        return th.matmul(embed_user, embed_item.transpose(0, 1))
+        embed_user = self.embed_user(users)  # (n_eval_users, dim_embed_latent)
+        embed_item = self.embed_item(items)  # (n_eval_items, dim_embed_latent)
+        return th.matmul(embed_user, embed_item.transpose(0, 1))  # (n_eval_users, n_eval_items)
+
+        # # get each embedding
+        # embed_user_lat = self.embed_user(users)  # (n_eval_users, dim_embed_latent)
+        # embed_item_lat = self.embed_item(items)  # (n_eval_items, dim_embed_latent)
+
+        # embed_user_vis = self.embed_user_visual(users)  # (batch_size, dim_embed_visual)
+        # imgfeat_item_vis = self.imgfeat_item_visual(items)  # (batch_size, dim_imgfeat)
+
+        # # compute score with latent factors
+        # score_lat = th.bmm(embed_user_lat.unsqueeze(1), embed_item_lat.unsqueeze(2)).squeeze(2)  # (batch_size)
+
+        # # compute score with visual factors
+        # embed_item_vis = imgfeat_item_vis * self.trans_e  # (batch_size, dim_embed_visual)
+        # score_vis = th.bmm(embed_user_vis.unsqueeze(1), embed_item_vis.unsqueeze(2)).squeeze(2)  # (batch_size)
+
+        # # compute score with visual factors
+        # bias_vis = th.sum(self.bias_visual * embed_item_vis, dim=1)  # (batch_size)
+
+        # # Eq.(4)
+        # score = score_lat + score_vis + bias_vis  # (batch_size)
+
+        # return th.matmul(embed_user, embed_item.transpose(0, 1))  # (n_eval_users, n_eval_items)
