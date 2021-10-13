@@ -31,7 +31,7 @@ class VBPR(nn.Module):
         self.imgfeat_item_visual = th.randn(dataset.n_items, dim_imgfeat)  # f (n_items, dim_imgfeat)
 
         self.trans_e = nn.Parameter(th.Tensor(dim_embed_visual, dim_imgfeat))  # E (D, F)
-        nn.init.xavier_uniform_(self.trans_w_u, gain=nn.init.calculate_gain('relu'))
+        nn.init.xavier_uniform_(self.trans_e, gain=nn.init.calculate_gain('relu'))
 
         # not optimized in paper
         # self.alpha = nn.Parameter(th.Tensor(1))
@@ -39,8 +39,8 @@ class VBPR(nn.Module):
         # self.bias_item = nn.Parameter(th.Tensor(dataset.n_item))
 
         # NOTE: users' overall opinion toward the visual appearance of a given item
-        self.bias_visual = nn.Parameter(th.Tensor(dim_imgfeat))  # Beta' (F)
-        nn.init.xavier_uniform_(self.trans_w_u, gain=nn.init.calculate_gain('relu'))
+        self.bias_visual = nn.Parameter(th.Tensor(dim_imgfeat, 1))  # Beta' (F)
+        nn.init.xavier_uniform_(self.bias_visual, gain=nn.init.calculate_gain('relu'))
 
         self.rate_reg_embed = rates_reg[0]
         self.rate_reg_beta = rates_reg[1]
@@ -56,16 +56,16 @@ class VBPR(nn.Module):
         embed_item_lat_neg = self.embed_item(items_neg)  # (batch_size, dim_embed_latent)
 
         embed_user_vis = self.embed_user_visual(users)  # (batch_size, dim_embed_visual)
-        imgfeat_item_vis_pos = self.imgfeat_item_visual(items_pos)  # (batch_size, dim_imgfeat)
-        imgfeat_item_vis_neg = self.imgfeat_item_visual(items_neg)  # (batch_size, dim_imgfeat)
+        imgfeat_item_vis_pos = self.imgfeat_item_visual[items_pos]  # (batch_size, dim_imgfeat)
+        imgfeat_item_vis_neg = self.imgfeat_item_visual[items_neg]  # (batch_size, dim_imgfeat)
 
         # compute score with latent factors
         score_lat_pos = th.bmm(embed_user_lat.unsqueeze(1), embed_item_lat_pos.unsqueeze(2)).squeeze(2)  # (batch_size)
         score_lat_neg = th.bmm(embed_user_lat.unsqueeze(1), embed_item_lat_neg.unsqueeze(2)).squeeze(2)  # (batch_size)
 
         # compute score with visual factors
-        embed_item_vis_pos = imgfeat_item_vis_pos * self.trans_e  # (batch_size, dim_embed_visual)
-        embed_item_vis_neg = imgfeat_item_vis_neg * self.trans_e  # (batch_size, dim_embed_visual)
+        embed_item_vis_pos = self.trans_e * imgfeat_item_vis_pos  # (batch_size, dim_embed_visual)
+        embed_item_vis_neg = self.trans_e * imgfeat_item_vis_neg  # (batch_size, dim_embed_visual)
         score_vis_pos = th.bmm(embed_user_vis.unsqueeze(1), embed_item_vis_pos.unsqueeze(2)).squeeze(2)  # (batch_size)
         score_vis_neg = th.bmm(embed_user_vis.unsqueeze(1), embed_item_vis_neg.unsqueeze(2)).squeeze(2)  # (batch_size)
 

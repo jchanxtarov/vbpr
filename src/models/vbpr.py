@@ -10,7 +10,7 @@ import numpy as np
 import torch as th
 import torch.optim as optim
 from utils.helpers import ensure_file, generate_path_model_file, is_best_epoch
-from utils.loaders.bvpr import VbprDataset
+from utils.loaders.vbpr import VbprDataset
 from utils.metrics import compute_metrics
 from utils.samplers import generate_batch_cf
 from utils.types import UserItems
@@ -24,10 +24,12 @@ class VbprPredictor(BasePredictor):
     # parameters
     model: VBPR
     epochs: int
-    dim_embed_latent: int
+    dim_embed_latent: int  # K
+    dim_embed_visual: int  # D
+    dim_imgfeat: int  # F
+    rates_reg: List[float]  # [reg_embed, reg_beta, reg_trans_e]
     batch_size: int
     n_loop_cf: int
-    rate_reg: float  # for [lamda_l2, (unused)]
     rate_learning: float
     top_ks: List[int]
     interval_evaluate: int
@@ -44,8 +46,10 @@ class VbprPredictor(BasePredictor):
         self,
         epochs=500,
         dim_embed_latent=64,
+        dim_embed_visual=64,
+        dim_imgfeat=4096,
         batch_size=1024,
-        rate_reg=1e-5,
+        rates_reg=[1e-5, 1e-5, 1e-5],
         rate_learning=1e-4,
         top_ks=[20, 60, 100],
         interval_evaluate=10,
@@ -54,8 +58,10 @@ class VbprPredictor(BasePredictor):
         super().__init__()
         self.epochs = epochs
         self.dim_embed_latent = dim_embed_latent
+        self.dim_embed_visual = dim_embed_visual
+        self.dim_imgfeat = dim_imgfeat
+        self.rates_reg = rates_reg
         self.batch_size = batch_size
-        self.rate_reg = rate_reg
         self.rate_learning = rate_learning
         self.top_ks = top_ks
         self.interval_evaluate = interval_evaluate
@@ -66,7 +72,9 @@ class VbprPredictor(BasePredictor):
         self.model = VBPR(
             dataset=dataset,
             dim_embed_latent=self.dim_embed_latent,
-            rate_reg=self.rate_reg,
+            dim_embed_visual=self.dim_embed_visual,
+            dim_imgfeat=self.dim_imgfeat,
+            rates_reg=self.rates_reg,
         )
         self.dataset = dataset
         self.n_loop_cf = dataset.n_train // self.batch_size + 1

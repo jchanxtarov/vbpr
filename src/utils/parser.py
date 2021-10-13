@@ -3,6 +3,7 @@
 
 import argparse
 from datetime import datetime as dt
+from typing import List
 
 from utils.types import ModelType
 
@@ -45,9 +46,9 @@ def parse_args():
         help='Set batch size.'
     )
     parser.add_argument(
-        '--rate_reg',
-        type=float,
-        default=1e-4,
+        '--rates_reg',
+        type=List[float],
+        default=[1e-4, 1e-4, 1e-4],
         help='Set reglarization rates.'
     )
     parser.add_argument(
