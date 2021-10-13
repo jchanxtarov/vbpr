@@ -104,28 +104,28 @@ class VbprPredictor(BasePredictor):
         for epoch in range(1, self.epochs + 1):
             time_start_epoch = time()
 
-            # 1. optimize recommendation (CF) part
-            loss_cf, loss_reg = 0.0, 0.0
+            # # 1. optimize recommendation (CF) part
+            # loss_cf, loss_reg = 0.0, 0.0
 
-            for _ in range(self.n_loop_cf):
-                users, pos_items, neg_items = generate_batch_cf(
-                    self.dataset.dict_train_pos, self.batch_size, self.dataset.n_items)
-                cf_batch_user = th.LongTensor(users).to(device)
-                cf_batch_pos_item = th.LongTensor(pos_items).to(device)
-                cf_batch_neg_item = th.LongTensor(neg_items).to(device)
+            # for _ in range(self.n_loop_cf):
+            #     users, pos_items, neg_items = generate_batch_cf(
+            #         self.dataset.dict_train_pos, self.batch_size, self.dataset.n_items)
+            #     cf_batch_user = th.LongTensor(users).to(device)
+            #     cf_batch_pos_item = th.LongTensor(pos_items).to(device)
+            #     cf_batch_neg_item = th.LongTensor(neg_items).to(device)
 
-                loss_cf_batch, loss_reg_batch = self.model(
-                    cf_batch_user, cf_batch_pos_item, cf_batch_neg_item)
-                loss_batch = loss_cf_batch + loss_reg_batch
-                optimizer.zero_grad()
-                loss_batch.backward()
-                optimizer.step()
-                loss_cf += loss_cf_batch.item()
-                loss_reg += loss_reg_batch.item()
+            #     loss_cf_batch, loss_reg_batch = self.model(
+            #         cf_batch_user, cf_batch_pos_item, cf_batch_neg_item)
+            #     loss_batch = loss_cf_batch + loss_reg_batch
+            #     optimizer.zero_grad()
+            #     loss_batch.backward()
+            #     optimizer.step()
+            #     loss_cf += loss_cf_batch.item()
+            #     loss_reg += loss_reg_batch.item()
 
-            logging.info(
-                '[Training] Epoch {:04d} / {:04d} [{:.1f}s] : CF(base) Loss {:.4f} : Regularization(reg) Loss {:.4f}'.format(
-                    epoch, self.epochs, time() - time_start_epoch, loss_cf, loss_reg))
+            # logging.info(
+            #     '[Training] Epoch {:04d} / {:04d} [{:.1f}s] : CF(base) Loss {:.4f} : Regularization(reg) Loss {:.4f}'.format(
+            #         epoch, self.epochs, time() - time_start_epoch, loss_cf, loss_reg))
 
             # 2. evaluation
             if (epoch % self.interval_evaluate) == 0:
