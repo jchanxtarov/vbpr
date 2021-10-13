@@ -1,0 +1,37 @@
+2021-10-14 07:07:30,688 @ root [DEBUG] set_logging: Success to set logging & generate logfile where ./src/outputs/sample/log/vbpr_20211014-070730.log.
+2021-10-14 07:07:30,688 @ root [INFO] <module>: Namespace(batch_size=256, dataset='sample', dim_embed_latent=32, dt_now='20211014-070730', epochs=30, interval_evaluate=3, model='vbpr', predict=False, rate_learning=0.01, rates_reg=[0.0001, 0.0001, 0.0001], save_log=True, save_model=True, save_recommended_items=False, seed=2020, stopping_steps=10, top_ks=[20, 60, 100], use_pretrain=False)
+2021-10-14 07:07:30,691 @ root [INFO] logging_statistics: n_train: 2195
+2021-10-14 07:07:30,691 @ root [INFO] logging_statistics: n_test:  594
+2021-10-14 07:07:30,691 @ root [INFO] logging_statistics: n_users: 100
+2021-10-14 07:07:30,692 @ root [INFO] logging_statistics: n_items: 24873
+2021-10-14 07:07:31,293 @ root [DEBUG] load: Success to load torch VBPR model.
+2021-10-14 07:07:31,293 @ root [INFO] train: VBPR(
+  (embed_user): Embedding(100, 32)
+  (embed_item): Embedding(24873, 32)
+  (embed_user_visual): Embedding(100, 64)
+)
+2021-10-14 07:07:31,594 @ root [INFO] train: [Training] Epoch 0001 / 0030 [0.3s] : CF(base) Loss 55.5970 : Regularization(reg) Loss 7.6910
+2021-10-14 07:07:31,892 @ root [INFO] train: [Training] Epoch 0002 / 0030 [0.3s] : CF(base) Loss 31.8173 : Regularization(reg) Loss 7.6544
+2021-10-14 07:07:32,214 @ root [INFO] train: [Training] Epoch 0003 / 0030 [0.3s] : CF(base) Loss 27.1225 : Regularization(reg) Loss 7.6622
+2021-10-14 07:07:33,013 @ root [INFO] train: [Evaluation] Epoch 0003 / 0030 [0.8s] : hits [0.00000	0.03000	0.03000], precision [0.00000	0.00050	0.00030], recall [0.00000	0.00439	0.00439], ndcg [0.00000	0.00145	0.00144]
+2021-10-14 07:07:33,330 @ root [INFO] train: [Training] Epoch 0004 / 0030 [0.3s] : CF(base) Loss 23.9669 : Regularization(reg) Loss 7.6698
+2021-10-14 07:07:33,639 @ root [INFO] train: [Training] Epoch 0005 / 0030 [0.3s] : CF(base) Loss 13.7444 : Regularization(reg) Loss 7.5647
+2021-10-14 07:07:33,941 @ root [INFO] train: [Training] Epoch 0006 / 0030 [0.3s] : CF(base) Loss 12.9881 : Regularization(reg) Loss 7.5893
+2021-10-14 07:07:34,712 @ root [INFO] train: [Evaluation] Epoch 0006 / 0030 [0.8s] : hits [0.00000	0.03000	0.03000], precision [0.00000	0.00050	0.00030], recall [0.00000	0.00378	0.00378], ndcg [0.00000	0.00111	0.00110]
+2021-10-14 07:07:35,088 @ root [INFO] train: [Training] Epoch 0007 / 0030 [0.4s] : CF(base) Loss 12.5155 : Regularization(reg) Loss 7.5890
+2021-10-14 07:07:35,450 @ root [INFO] train: [Training] Epoch 0008 / 0030 [0.4s] : CF(base) Loss 17.4904 : Regularization(reg) Loss 7.5065
+2021-10-14 07:07:35,765 @ root [INFO] train: [Training] Epoch 0009 / 0030 [0.3s] : CF(base) Loss 12.8996 : Regularization(reg) Loss 7.4842
+2021-10-14 07:07:36,539 @ root [INFO] train: [Evaluation] Epoch 0009 / 0030 [0.8s] : hits [0.00000	0.01000	0.02000], precision [0.00000	0.00017	0.00020], recall [0.00000	0.00015	0.00092], ndcg [0.00000	0.00012	0.00041]
+2021-10-14 07:07:36,848 @ root [INFO] train: [Training] Epoch 0010 / 0030 [0.3s] : CF(base) Loss 9.4060 : Regularization(reg) Loss 7.4069
+2021-10-14 07:07:37,158 @ root [INFO] train: [Training] Epoch 0011 / 0030 [0.3s] : CF(base) Loss 8.2216 : Regularization(reg) Loss 7.3648
+2021-10-14 07:07:37,464 @ root [INFO] train: [Training] Epoch 0012 / 0030 [0.3s] : CF(base) Loss 6.4538 : Regularization(reg) Loss 7.3011
+2021-10-14 07:07:38,188 @ root [INFO] train: [Evaluation] Epoch 0012 / 0030 [0.7s] : hits [0.00000	0.00000	0.04000], precision [0.00000	0.00000	0.00040], recall [0.00000	0.00000	0.00616], ndcg [0.00000	0.00000	0.00147]
+2021-10-14 07:07:38,493 @ root [INFO] train: [Training] Epoch 0013 / 0030 [0.3s] : CF(base) Loss 6.0591 : Regularization(reg) Loss 7.2345
+2021-10-14 07:07:38,797 @ root [INFO] train: [Training] Epoch 0014 / 0030 [0.3s] : CF(base) Loss 4.0111 : Regularization(reg) Loss 7.1345
+2021-10-14 07:07:39,099 @ root [INFO] train: [Training] Epoch 0015 / 0030 [0.3s] : CF(base) Loss 10.2136 : Regularization(reg) Loss 7.1410
+2021-10-14 07:07:39,815 @ root [INFO] train: [Evaluation] Epoch 0015 / 0030 [0.7s] : hits [0.00000	0.02000	0.04000], precision [0.00000	0.00033	0.00040], recall [0.00000	0.00101	0.00632], ndcg [0.00000	0.00051	0.00167]
+2021-10-14 07:07:40,112 @ root [INFO] train: [Training] Epoch 0016 / 0030 [0.3s] : CF(base) Loss 5.6012 : Regularization(reg) Loss 7.0787
+2021-10-14 07:07:40,426 @ root [INFO] train: [Training] Epoch 0017 / 0030 [0.3s] : CF(base) Loss 7.5379 : Regularization(reg) Loss 7.0050
+2021-10-14 07:07:40,738 @ root [INFO] train: [Training] Epoch 0018 / 0030 [0.3s] : CF(base) Loss 4.7940 : Regularization(reg) Loss 6.9484
+2021-10-14 07:07:41,459 @ root [INFO] train: [Evaluation] Epoch 0018 / 0030 [0.7s] : hits [0.01000	0.02000	0.06000], precision [0.00050	0.00033	0.00070], recall [0.00031	0.00103	0.01280], ndcg [0.00041	0.00063	0.00326]
+2021-10-14 07:07:41,459 @ root [INFO] train: [Finish Training] Epoch 0018 / 0030 [10.2s]

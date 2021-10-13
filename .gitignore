@@ -3,8 +3,6 @@ memo.md
 todo.md
 test.ipynb
 
-!output/sample/*
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
