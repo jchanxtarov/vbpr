@@ -24,7 +24,7 @@ class VbprPredictor(BasePredictor):
     # parameters
     model: VBPR
     epochs: int
-    dim_embed_global: int
+    dim_embed_latent: int
     batch_size: int
     n_loop_cf: int
     rate_reg: float  # for [lamda_l2, (unused)]
@@ -43,7 +43,7 @@ class VbprPredictor(BasePredictor):
     def __init__(
         self,
         epochs=500,
-        dim_embed_global=64,
+        dim_embed_latent=64,
         batch_size=1024,
         rate_reg=1e-5,
         rate_learning=1e-4,
@@ -53,7 +53,7 @@ class VbprPredictor(BasePredictor):
     ) -> None:
         super().__init__()
         self.epochs = epochs
-        self.dim_embed_global = dim_embed_global
+        self.dim_embed_latent = dim_embed_latent
         self.batch_size = batch_size
         self.rate_reg = rate_reg
         self.rate_learning = rate_learning
@@ -65,7 +65,7 @@ class VbprPredictor(BasePredictor):
     def load(self, dataset: VbprDataset) -> None:
         self.model = VBPR(
             dataset=dataset,
-            dim_embed_global=self.dim_embed_global,
+            dim_embed_latent=self.dim_embed_latent,
             rate_reg=self.rate_reg,
         )
         self.dataset = dataset
