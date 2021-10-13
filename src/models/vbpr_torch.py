@@ -33,7 +33,7 @@ class VBPR(nn.Module):
         self.trans_e = nn.Parameter(th.Tensor(dim_embed_visual, dim_imgfeat))  # E (D, F)
         nn.init.xavier_uniform_(self.trans_e, gain=nn.init.calculate_gain('relu'))
 
-        # not optimized in paper
+        # these params are canceled in Eq.(7)
         # self.alpha = nn.Parameter(th.Tensor(1))
         # self.bias_user = nn.Parameter(th.Tensor(dataset.n_users))
         # self.bias_item = nn.Parameter(th.Tensor(dataset.n_item))
