@@ -20,7 +20,7 @@ def parse_args():
     parser.add_argument(
         '--dataset',
         type=str,
-        default='amazon-book',
+        default='sample',
         help='Select the target dataset.',
     )
     parser.add_argument(
