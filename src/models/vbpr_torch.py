@@ -18,11 +18,11 @@ class VBPR(nn.Module):
     ) -> None:
         super(VBPR, self).__init__()
 
-        self.user_embed = nn.Embedding(dataset.n_users, dim_embed_global)
-        nn.init.xavier_uniform_(self.user_embed.weight,
+        self.embed_user = nn.Embedding(dataset.n_users, dim_embed_global)
+        nn.init.xavier_uniform_(self.embed_user.weight,
                                 gain=nn.init.calculate_gain('relu'))
-        self.item_embed = nn.Embedding(dataset.n_items, dim_embed_global)
-        nn.init.xavier_uniform_(self.item_embed.weight,
+        self.embed_item = nn.Embedding(dataset.n_items, dim_embed_global)
+        nn.init.xavier_uniform_(self.embed_item.weight,
                                 gain=nn.init.calculate_gain('relu'))
 
         self.rate_reg = rate_reg
@@ -30,31 +30,31 @@ class VBPR(nn.Module):
     def forward(self, *input):
         return self._compute_loss(*input)
 
-    def _compute_loss(self, userids, itemids_pos, itemids_neg):
-        user_embed = self.user_embed(userids)  # (batch_size, dim_embed_global)
+    def _compute_loss(self, users, items_pos, items_neg):
+        embed_user = self.embed_user(users)  # (batch_size, dim_embed_global)
         # (batch_size, dim_embed_global)
-        item_embed_pos = self.item_embed(itemids_pos)
+        embed_item_pos = self.embed_item(items_pos)
         # (batch_size, dim_embed_global)
-        item_embed_neg = self.item_embed(itemids_neg)
+        embed_item_neg = self.embed_item(items_neg)
 
-        pos_score = th.sum(user_embed * item_embed_pos, dim=1)  # (batch_size)
-        neg_score = th.sum(user_embed * item_embed_neg, dim=1)  # (batch_size)
+        score_pos = th.sum(embed_user * embed_item_pos, dim=1)  # (batch_size)
+        score_neg = th.sum(embed_user * embed_item_neg, dim=1)  # (batch_size)
 
-        base_loss = (-1.0) * F.logsigmoid(pos_score - neg_score)
+        base_loss = (-1.0) * F.logsigmoid(score_pos - score_neg)
         base_loss = th.mean(base_loss)
 
         reg_loss = self._l2_loss(
-            user_embed) + self._l2_loss(item_embed_pos) + self._l2_loss(item_embed_neg)
+            embed_user) + self._l2_loss(embed_item_pos) + self._l2_loss(embed_item_neg)
         reg_loss = self.rate_reg * reg_loss
         return base_loss, reg_loss
 
     def _l2_loss(self, embedd):
         return th.sum(embedd.pow(2).sum(1) / 2.0)
 
-    def predict(self, userids, itemids):
+    def predict(self, users, items):
         # (n_eval_users, dim_embed_global)
-        user_embed = self.user_embed(userids)
+        embed_user = self.embed_user(users)
         # (n_eval_items, dim_embed_global)
-        item_embed = self.item_embed(itemids)
+        embed_item = self.embed_item(items)
         # (n_eval_users, n_eval_items)
-        return th.matmul(user_embed, item_embed.transpose(0, 1))
+        return th.matmul(embed_user, embed_item.transpose(0, 1))

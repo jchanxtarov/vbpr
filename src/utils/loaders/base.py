@@ -53,14 +53,14 @@ class BaseDataset(metaclass=ABCMeta):
             tmps = line.strip()
             inters = [int(i) for i in tmps.split(" ")]
 
-            userid, itemids = inters[0], inters[1:]
-            itemids = list(set(itemids))
+            user, items = inters[0], inters[1:]
+            items = list(set(items))
 
-            for itemid in itemids:
-                list_uid_iid.append([userid, itemid])
+            for item in items:
+                list_uid_iid.append([user, item])
 
-            if len(itemids) > 0:
-                dict_uid_iids[userid] = itemids
+            if len(items) > 0:
+                dict_uid_iids[user] = items
         return np.array(list_uid_iid), dict_uid_iids
 
 

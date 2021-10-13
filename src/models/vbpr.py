@@ -83,9 +83,9 @@ class VbprPredictor(BasePredictor):
                                lr=self.rate_learning, eps=1e-7)
 
         # ids
-        userids_batch_test = [th.LongTensor(self.dataset.uniq_users[i:i + 10000]).to(
+        users_batch_test = [th.LongTensor(self.dataset.uniq_users[i:i + 10000]).to(
             device) for i in range(0, self.dataset.n_users, 10000)]
-        itemids = th.arange(self.dataset.n_items, dtype=th.long).to(device)
+        items = th.arange(self.dataset.n_items, dtype=th.long).to(device)
 
         # train model
         time_start_train = time()
@@ -125,8 +125,8 @@ class VbprPredictor(BasePredictor):
                 hits, precisions, recalls, ndcgs, _ = self._evaluate_batch(
                     dict_train_pos=self.dataset.dict_train_pos,
                     dict_test_pos=self.dataset.dict_test_pos,
-                    userids_batch=userids_batch_test,
-                    itemids=itemids,
+                    users_batch=users_batch_test,
+                    items=items,
                     list_k=self.top_ks)
 
                 logging.info('[Evaluation] Epoch {:04d} / {:04d} [{:.1f}s] : hits [{:s}], precision [{:s}], recall [{:s}], ndcg [{:s}]'.format(
@@ -157,7 +157,7 @@ class VbprPredictor(BasePredictor):
             epoch, self.epochs, time() - time_start_train))
 
     def _evaluate_batch(
-        self, dict_train_pos: UserItems, dict_test_pos: UserItems, userids_batch: List[th.Tensor], itemids: th.Tensor, list_k: List[int], is_predict: bool = False
+        self, dict_train_pos: UserItems, dict_test_pos: UserItems, users_batch: List[th.Tensor], items: th.Tensor, list_k: List[int], is_predict: bool = False
     ) -> Tuple[List[np.ndarray], List[np.ndarray], List[np.ndarray], List[np.ndarray], Dict[int, List[int]]]:
         self.model = self.model.eval()
 
@@ -165,23 +165,23 @@ class VbprPredictor(BasePredictor):
         rec_items = dict()
         n_users = 0
         with th.no_grad():
-            for userids in userids_batch:
+            for users in users_batch:
                 cf_scores_batch = self.model.predict(
-                    userids, itemids)  # (n_batch_users, n_eval_items)
+                    users, items)  # (n_batch_users, n_eval_items)
 
                 hits_batch, precision_batch, recall_batch, ndcg_batch, rec_items_batch = compute_metrics(
                     cf_scores_batch.cpu(), dict_train_pos, dict_test_pos,
-                    userids.cpu().numpy(), itemids.cpu().numpy(), list_k, is_predict)
+                    users.cpu().numpy(), items.cpu().numpy(), list_k, is_predict)
 
                 hit.append(hits_batch)
                 precision.append(precision_batch)
                 recall.append(recall_batch)
                 ndcg.append(ndcg_batch)
-                n_users += len(userids)
+                n_users += len(users)
 
                 if is_predict:
-                    for i, userid in enumerate(userids):
-                        rec_items[int(userid)] = list(rec_items_batch[i])
+                    for i, user in enumerate(users):
+                        rec_items[int(user)] = list(rec_items_batch[i])
 
         hits, precisions, recalls, ngcds = [], [], [], []
         for i in range(len(list_k)):
@@ -206,16 +206,16 @@ class VbprPredictor(BasePredictor):
         self.model.to(device)
 
         # ids
-        userids_batch_test = [th.LongTensor(self.dataset.uniq_users[i:i + 10000]).to(
+        users_batch_test = [th.LongTensor(self.dataset.uniq_users[i:i + 10000]).to(
             device) for i in range(0, self.dataset.n_users, 10000)]
-        itemids = th.arange(self.dataset.n_items, dtype=th.long).to(device)
+        items = th.arange(self.dataset.n_items, dtype=th.long).to(device)
 
         time_start_eval = time()
         hits, precisions, recalls, ndcgs, dict_rec_items = self._evaluate_batch(
             dict_train_pos=self.dataset.dict_train_pos,
             dict_test_pos=self.dataset.dict_test_pos,
-            userids_batch=userids_batch_test,
-            itemids=itemids,
+            users_batch=users_batch_test,
+            items=items,
             list_k=self.top_ks,
             is_predict=True)
 

@@ -28,9 +28,9 @@ def generate_batch_cf(
 
 
 def sample_items_pos_for_u(
-    dict_user_items: UserItems, userid: int, n_sample_items_pos: int
+    dict_user_items: UserItems, user: int, n_sample_items_pos: int
 ) -> List[int]:
-    items_pos = list(map(lambda x: x, dict_user_items[userid]))
+    items_pos = list(map(lambda x: x, dict_user_items[user]))
     n_items_pos = len(items_pos)
     items_pos_sampled: List[int] = []
     # consider: not need while & n_sample_items_pos
@@ -38,21 +38,21 @@ def sample_items_pos_for_u(
         if len(items_pos_sampled) == n_sample_items_pos:
             break
         pos_item_idx = np.random.randint(low=0, high=n_items_pos, size=1)[0]
-        itemid_pos = items_pos[pos_item_idx]
-        if itemid_pos not in items_pos_sampled:
-            items_pos_sampled.append(itemid_pos)
+        item_pos = items_pos[pos_item_idx]
+        if item_pos not in items_pos_sampled:
+            items_pos_sampled.append(item_pos)
     return items_pos_sampled
 
 
 def sample_items_neg_for_u(
-    dict_user_items: UserItems, userid: int, n_sample_items_neg: int, n_items: int
+    dict_user_items: UserItems, user: int, n_sample_items_neg: int, n_items: int
 ) -> List[int]:
-    items_pos = list(map(lambda x: x, dict_user_items[userid]))
+    items_pos = list(map(lambda x: x, dict_user_items[user]))
     items_neg_sampled: List[int] = []
     while True:
         if len(items_neg_sampled) == n_sample_items_neg:
             break
-        itemid_neg = np.random.randint(low=0, high=n_items, size=1)[0]
-        if (itemid_neg not in items_pos) and (itemid_neg not in items_neg_sampled):
-            items_neg_sampled.append(itemid_neg)
+        item_neg = np.random.randint(low=0, high=n_items, size=1)[0]
+        if (item_neg not in items_pos) and (item_neg not in items_neg_sampled):
+            items_neg_sampled.append(item_neg)
     return items_neg_sampled
