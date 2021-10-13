@@ -64,14 +64,14 @@ class VBPR(nn.Module):
         score_lat_neg = th.bmm(embed_user_lat.unsqueeze(1), embed_item_lat_neg.unsqueeze(2)).squeeze(2)  # (batch_size)
 
         # compute score with visual factors
-        embed_item_vis_pos = self.trans_e * imgfeat_item_vis_pos  # (batch_size, dim_embed_visual)
-        embed_item_vis_neg = self.trans_e * imgfeat_item_vis_neg  # (batch_size, dim_embed_visual)
+        embed_item_vis_pos = th.matmul(self.trans_e, imgfeat_item_vis_pos.T).T  # (batch_size, dim_embed_visual)
+        embed_item_vis_neg = th.matmul(self.trans_e, imgfeat_item_vis_neg.T).T  # (batch_size, dim_embed_visual)
         score_vis_pos = th.bmm(embed_user_vis.unsqueeze(1), embed_item_vis_pos.unsqueeze(2)).squeeze(2)  # (batch_size)
         score_vis_neg = th.bmm(embed_user_vis.unsqueeze(1), embed_item_vis_neg.unsqueeze(2)).squeeze(2)  # (batch_size)
 
-        # compute score with visual factors
-        bias_vis_pos = th.sum(self.bias_visual * embed_item_vis_pos, dim=1)  # (batch_size)
-        bias_vis_neg = th.sum(self.bias_visual * embed_item_vis_neg, dim=1)  # (batch_size)
+        # compute score of users' overall opinion toward the visual appearance
+        bias_vis_pos = th.matmul(imgfeat_item_vis_pos, self.bias_visual)  # (batch_size)
+        bias_vis_neg = th.matmul(imgfeat_item_vis_neg, self.bias_visual)  # (batch_size)
 
         # Eq.(4)
         score_pos = score_lat_pos + score_vis_pos + bias_vis_pos  # (batch_size)
