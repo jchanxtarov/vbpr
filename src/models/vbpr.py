@@ -52,7 +52,7 @@ class VbprPredictor(BasePredictor):
         rate_learning=1e-4,
         top_ks=[20, 60, 100],
         interval_evaluate=10,
-        stopping_steps=300,
+        stopping_steps=30,
     ) -> None:
         super().__init__()
         self.epochs = epochs

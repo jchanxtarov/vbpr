@@ -39,12 +39,13 @@ if __name__ == '__main__':
     model: Any
 
     if args.model == ModelType.VBPR.value:
-        dataset = VbprDataset(args.dataset)
+        dataset = VbprDataset(args.dataset, args.is_sample_dataset)
         dataset.logging_statistics()
 
         model = VbprPredictor(
             epochs=args.epochs,
             dim_embed_latent=args.dim_embed_latent,
+            dim_embed_visual=args.dim_embed_visual,
             batch_size=args.batch_size,
             rates_reg=args.rates_reg,
             rate_learning=args.rate_learning,

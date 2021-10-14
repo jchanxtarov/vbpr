@@ -81,6 +81,12 @@ def parse_args():
         default=32,
         help='Set dim_embed_latent.'
     )
+    parser.add_argument(
+        '--dim_embed_visual',
+        type=int,
+        default=32,
+        help='Set dim_embed_visual.'
+    )
 
     # about experiment condition
     parser.add_argument(
@@ -114,5 +120,9 @@ def parse_args():
     args = parser.parse_args()
     args.dt_now = dt.now().strftime("%Y%m%d-%H%M%S")
     args.top_ks = eval(args.top_ks)
+
+    args.is_sample_dataset = False
+    if args.dataset == 'sample':
+        args.is_sample_dataset = True
 
     return args

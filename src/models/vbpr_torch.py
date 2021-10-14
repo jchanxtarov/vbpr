@@ -16,7 +16,7 @@ class VBPR(nn.Module):
             dim_embed_latent: int,  # K
             dim_embed_visual: int,  # D
             dim_imgfeat: int,  # F
-            rates_reg: List[float]  # [reg_embed, reg_beta, reg_trans_e]
+            rates_reg: List[float],  # [reg_embed, reg_beta, reg_trans_e]
     ) -> None:
         super(VBPR, self).__init__()
 
@@ -27,8 +27,6 @@ class VBPR(nn.Module):
         self.embed_user_visual = nn.Embedding(dataset.n_users, dim_embed_visual)
         nn.init.xavier_uniform_(self.embed_user.weight, gain=nn.init.calculate_gain('relu'))
 
-        # sample
-        # self.imgfeat_item_visual = th.randn(dataset.n_items, dim_imgfeat)  # f (n_items, dim_imgfeat)
         self.imgfeat_item_visual = dataset.items_imgfeat  # f (n_items, dim_imgfeat)
 
         self.trans_e = nn.Parameter(th.Tensor(dim_embed_visual, dim_imgfeat))  # E (D, F)
