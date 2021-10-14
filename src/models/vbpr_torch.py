@@ -27,8 +27,9 @@ class VBPR(nn.Module):
         self.embed_user_visual = nn.Embedding(dataset.n_users, dim_embed_visual)
         nn.init.xavier_uniform_(self.embed_user.weight, gain=nn.init.calculate_gain('relu'))
 
-        # TODO: get from dataset
-        self.imgfeat_item_visual = th.randn(dataset.n_items, dim_imgfeat)  # f (n_items, dim_imgfeat)
+        # sample
+        # self.imgfeat_item_visual = th.randn(dataset.n_items, dim_imgfeat)  # f (n_items, dim_imgfeat)
+        self.imgfeat_item_visual = dataset.items_imgfeat  # f (n_items, dim_imgfeat)
 
         self.trans_e = nn.Parameter(th.Tensor(dim_embed_visual, dim_imgfeat))  # E (D, F)
         nn.init.xavier_uniform_(self.trans_e, gain=nn.init.calculate_gain('relu'))

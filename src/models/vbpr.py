@@ -47,7 +47,6 @@ class VbprPredictor(BasePredictor):
         epochs=500,
         dim_embed_latent=64,
         dim_embed_visual=64,
-        dim_imgfeat=4096,
         batch_size=1024,
         rates_reg=[1e-5, 1e-5, 1e-5],
         rate_learning=1e-4,
@@ -59,7 +58,6 @@ class VbprPredictor(BasePredictor):
         self.epochs = epochs
         self.dim_embed_latent = dim_embed_latent
         self.dim_embed_visual = dim_embed_visual
-        self.dim_imgfeat = dim_imgfeat
         self.rates_reg = rates_reg
         self.batch_size = batch_size
         self.rate_learning = rate_learning
@@ -73,7 +71,7 @@ class VbprPredictor(BasePredictor):
             dataset=dataset,
             dim_embed_latent=self.dim_embed_latent,
             dim_embed_visual=self.dim_embed_visual,
-            dim_imgfeat=self.dim_imgfeat,
+            dim_imgfeat=dataset.dim_imgfeat,
             rates_reg=self.rates_reg,
         )
         self.dataset = dataset

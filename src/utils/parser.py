@@ -21,7 +21,7 @@ def parse_args():
     parser.add_argument(
         '--dataset',
         type=str,
-        default='sample',
+        default='amazon-fashion',
         help='Select the target dataset.',
     )
     parser.add_argument(
