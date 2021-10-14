@@ -1,10 +1,10 @@
 # Copyright (c) latataro (jchanxtarov). All rights reserved.
 # Licensed under the MIT License.
+
 import logging
 import pickle
 from dataclasses import dataclass
 
-import numpy as np
 import torch as th
 
 from .base import BaseDataset
