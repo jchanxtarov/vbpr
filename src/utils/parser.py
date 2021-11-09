@@ -36,7 +36,7 @@ def parse_args():
     parser.add_argument(
         '--epochs',
         type=int,
-        default=30,
+        default=50,
         help='Set max epochs.'
     )
     parser.add_argument(
@@ -66,7 +66,7 @@ def parse_args():
     parser.add_argument(
         '--interval_evaluate',
         type=int,
-        default=3,
+        default=5,
         help='Set interval_evaluate.'
     )
     parser.add_argument(
