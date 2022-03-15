@@ -10,6 +10,7 @@ import torch as th
 from .base import BaseDataset
 
 
+# TODO: load image & update parameters in cnn model
 @dataclass
 class VbprDataset(BaseDataset):
     dim_imgfeat: int
