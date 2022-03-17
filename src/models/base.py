@@ -19,7 +19,7 @@ class BasePredictor(Generic[Dataset], metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def train(self) -> None:
+    def train(self, dataloader: th.utils.data.DataLoader) -> None:
         raise NotImplementedError
 
     @abstractmethod

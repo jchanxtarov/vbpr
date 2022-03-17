@@ -24,6 +24,14 @@ def parse_args():
         default='sample',
         help='Select the target dataset.',
     )
+    # AlexNet
+    # see also: https://pytorch.org/vision/main/_modules/torchvision/models/alexnet.html#alexnet
+    parser.add_argument(
+        '--size_img',
+        type=int,
+        default=256,
+        help='Select size of image.',
+    )
     parser.add_argument(
         '--type_img',
         type=str,

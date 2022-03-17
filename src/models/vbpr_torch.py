@@ -37,7 +37,8 @@ class VBPR(nn.Module):
         self.body = create_feature_extractor(
             model, {'classifier.4': 'FC7'},
         )
-        dim_imgfeat = 4096
+        _x = th.rand((1, 3, dataset.size_img, dataset.size_img))
+        dim_imgfeat = self.body(_x)['FC7'].size()[1]  # (batch, dim_imgfeat)
 
         self.trans_e = nn.Parameter(th.Tensor(dim_embed_visual, dim_imgfeat))  # E (D, F)
         nn.init.xavier_uniform_(self.trans_e, gain=nn.init.calculate_gain('relu'))

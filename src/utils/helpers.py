@@ -75,7 +75,7 @@ def save_recommended_items_list(path: str, dict_user_items: UserItems) -> None:
 
 def get_transformer(size_img):
     return transforms.Compose([
-        transforms.Resize(size_img),
+        transforms.Resize((size_img, size_img)),
         transforms.ToTensor(),
         transforms.Normalize(
             mean=[0.485, 0.456, 0.406],

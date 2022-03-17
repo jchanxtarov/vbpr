@@ -39,11 +39,11 @@ if __name__ == '__main__':
     model: Any
 
     if args.model == ModelType.VBPR.value:
-        # see also: https://pytorch.org/vision/main/_modules/torchvision/models/alexnet.html#alexnet
-        trfm = get_transformer((256, 256))
+        trfm = get_transformer(args.size_img)
 
         dataset = VbprDataset(
             name_dataset=args.dataset,
+            size_img=args.size_img,
             ext=args.type_img,
             transform=trfm,
         )

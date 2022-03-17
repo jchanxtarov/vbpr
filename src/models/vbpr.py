@@ -14,7 +14,6 @@ from tqdm import tqdm
 from utils.helpers import ensure_file, generate_path_model_file, is_best_epoch
 from utils.loaders.vbpr2 import VbprDataset
 from utils.metrics import compute_metrics
-from utils.samplers import generate_batch_cf
 from utils.types import UserItems
 
 from .base import BasePredictor
@@ -28,7 +27,6 @@ class VbprPredictor(BasePredictor):
     epochs: int
     dim_embed_latent: int  # K
     dim_embed_visual: int  # D
-    dim_imgfeat: int  # F
     rates_reg: List[float]  # [reg_embed, reg_beta, reg_trans_e]
     batch_size: int
     n_loop_cf: int
@@ -43,12 +41,15 @@ class VbprPredictor(BasePredictor):
     # dataset
     dataset: VbprDataset
 
+    """
+    initialize training condition
+    """
     def __init__(
         self,
         epochs=50,
         dim_embed_latent=64,
         dim_embed_visual=64,
-        batch_size=1024,
+        batch_size=256,
         rates_reg=[1e-5, 1e-5, 1e-5],
         rate_learning=1e-4,
         top_ks=[20, 60, 100],
@@ -67,6 +68,9 @@ class VbprPredictor(BasePredictor):
         self.stopping_steps = stopping_steps
         self.best_epoch = 0
 
+    """
+    load torch model
+    """
     def load(self, dataset: VbprDataset) -> None:
         self.model = VBPR(
             dataset=dataset,
@@ -77,6 +81,9 @@ class VbprPredictor(BasePredictor):
         self.dataset = dataset
         logging.debug('Success to load torch VBPR model.')
 
+    """
+    traning
+    """
     def train(self, dataloader: th.utils.data.DataLoader) -> None:
         device = th.device("cuda:0" if th.cuda.is_available() else "cpu")
         self.model.to(device)
@@ -167,7 +174,47 @@ class VbprPredictor(BasePredictor):
         logging.info('[Finish Training] Best Epoch {:04d} [{:.1f}s]'.format(
             self.best_epoch, time() - time_start_train))
 
-    # TODO: add image feature by cnn
+    """
+    save model
+    """
+    def save(self, name_data: str, name_model: str, uniqid: str) -> None:
+        path_model = generate_path_model_file(
+            name_data, name_model, self.best_epoch, uniqid)
+        ensure_file(path_model)
+        # NOTE: avoid error when load gpu model from cpu environment
+        th.save(self.model.to(th.device('cpu')).state_dict(), path_model)
+
+    """
+    predict
+    """
+    def predict(self, pretrain_path: str = '') -> UserItems:
+        if pretrain_path != '':
+            self.model = self.load_pretrained_model(self.model, pretrain_path)
+        device = th.device("cuda:0" if th.cuda.is_available() else "cpu")
+        self.model.to(device)
+
+        users_batch_test = [th.LongTensor(self.dataset.uniq_users[i:i + 10000]).to(
+            device) for i in range(0, self.dataset.n_users, 10000)]
+        items = th.arange(self.dataset.n_items, dtype=th.long).to(device)
+
+        time_start_eval = time()
+        hits, precisions, recalls, ndcgs, dict_rec_items = self._evaluate_batch(
+            dict_train_pos=self.dataset.dict_train_pos,
+            dict_test_pos=self.dataset.dict_test_pos,
+            users_batch=users_batch_test,
+            items=items,
+            list_k=self.top_ks,
+            is_predict=True)
+
+        logging.info('[Prediction] [{:.1f}s] : hits [{:s}], precision [{:s}], recall [{:s}], ndcg [{:s}]'.format(
+            time() - time_start_eval,
+            '\t'.join(['%.5f' % h for h in hits]),
+            '\t'.join(['%.5f' % p for p in precisions]),
+            '\t'.join(['%.5f' % r for r in recalls]),
+            '\t'.join(['%.5f' % n for n in ndcgs]),
+        ))
+        return dict_rec_items
+
     def _evaluate_batch(
         self, dict_train_pos: UserItems, dict_test_pos: UserItems, users_batch: List[th.Tensor], items: th.Tensor, list_k: List[int], is_predict: bool = False
     ) -> Tuple[List[np.ndarray], List[np.ndarray], List[np.ndarray], List[np.ndarray], Dict[int, List[int]]]:
@@ -213,39 +260,3 @@ class VbprPredictor(BasePredictor):
             ngcds.append(np.sum([n[i] for n in ndcg]) / n_users)
 
         return hits, precisions, recalls, ngcds, rec_items
-
-    def save(self, name_data: str, name_model: str, uniqid: str) -> None:
-        path_model = generate_path_model_file(
-            name_data, name_model, self.best_epoch, uniqid)
-        ensure_file(path_model)
-        # NOTE: avoid error when load gpu model from cpu environment
-        th.save(self.model.to(th.device('cpu')).state_dict(), path_model)
-
-    def predict(self, pretrain_path: str = '') -> UserItems:
-        if pretrain_path != '':
-            self.model = self.load_pretrained_model(self.model, pretrain_path)
-        device = th.device("cuda:0" if th.cuda.is_available() else "cpu")
-        self.model.to(device)
-
-        # ids
-        users_batch_test = [th.LongTensor(self.dataset.uniq_users[i:i + 10000]).to(
-            device) for i in range(0, self.dataset.n_users, 10000)]
-        items = th.arange(self.dataset.n_items, dtype=th.long).to(device)
-
-        time_start_eval = time()
-        hits, precisions, recalls, ndcgs, dict_rec_items = self._evaluate_batch(
-            dict_train_pos=self.dataset.dict_train_pos,
-            dict_test_pos=self.dataset.dict_test_pos,
-            users_batch=users_batch_test,
-            items=items,
-            list_k=self.top_ks,
-            is_predict=True)
-
-        logging.info('[Prediction] [{:.1f}s] : hits [{:s}], precision [{:s}], recall [{:s}], ndcg [{:s}]'.format(
-            time() - time_start_eval,
-            '\t'.join(['%.5f' % h for h in hits]),
-            '\t'.join(['%.5f' % p for p in precisions]),
-            '\t'.join(['%.5f' % r for r in recalls]),
-            '\t'.join(['%.5f' % n for n in ndcgs]),
-        ))
-        return dict_rec_items
