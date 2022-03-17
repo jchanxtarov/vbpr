@@ -6,6 +6,8 @@ import os
 from logging import DEBUG, NOTSET, FileHandler, Formatter
 from typing import Tuple
 
+from torchvision import transforms
+
 from .types import UserItems
 
 
@@ -69,3 +71,14 @@ def save_recommended_items_list(path: str, dict_user_items: UserItems) -> None:
     for k, v in dict_user_items.items():
         f.write(str(k) + ',' + str(v) + '\n')
     f.close()
+
+
+def get_transformer(size_img):
+    return transforms.Compose([
+        transforms.Resize(size_img),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        )
+    ])

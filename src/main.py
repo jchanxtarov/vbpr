@@ -11,9 +11,9 @@ import torch as th
 from models.vbpr import VbprPredictor
 from utils.helpers import (ensure_file, generate_path_log_file,
                            generate_path_pretrain_file,
-                           generate_path_recitems_file,
+                           generate_path_recitems_file, get_transformer,
                            save_recommended_items_list, set_logging)
-from utils.loaders.vbpr import VbprDataset
+from utils.loaders.vbpr2 import VbprDataset
 from utils.parser import parse_args
 from utils.types import ModelType
 
@@ -39,8 +39,21 @@ if __name__ == '__main__':
     model: Any
 
     if args.model == ModelType.VBPR.value:
-        dataset = VbprDataset(args.dataset, args.is_sample_dataset)
-        dataset.logging_statistics()
+        # see also: https://pytorch.org/vision/main/_modules/torchvision/models/alexnet.html#alexnet
+        trfm = get_transformer((256, 256))
+
+        dataset = VbprDataset(
+            name_dataset=args.dataset,
+            ext=args.type_img,
+            transform=trfm,
+        )
+
+        dataloader = th.utils.data.DataLoader(
+            dataset,
+            batch_size=args.batch_size,
+            shuffle=True,
+            num_workers=args.num_workers,
+        )
 
         model = VbprPredictor(
             epochs=args.epochs,
@@ -57,20 +70,21 @@ if __name__ == '__main__':
     model.load(dataset)
 
     if not args.use_pretrain:
-        model.train()
+        model.train(dataloader)
 
         if args.save_model:
             model.save(args.dataset, args.model, args.dt_now)
 
     if args.predict:
-        path_pretrain = ''
-        if args.use_pretrain and args.pretrain_file:
-            path_pretrain = generate_path_pretrain_file(
-                args.dataset, args.pretrain_file)
-        rec_items = model.predict(path_pretrain)
+        with th.no_grad():
+            path_pretrain = ''
+            if args.use_pretrain and args.pretrain_file:
+                path_pretrain = generate_path_pretrain_file(
+                    args.dataset, args.pretrain_file)
+            rec_items = model.predict(path_pretrain)
 
-        if args.save_recommended_items:
-            path_items = generate_path_recitems_file(
-                args.dataset, args.model, args.dt_now)
-            ensure_file(path_items)
-            save_recommended_items_list(path_items, rec_items)
+            if args.save_recommended_items:
+                path_items = generate_path_recitems_file(
+                    args.dataset, args.model, args.dt_now)
+                ensure_file(path_items)
+                save_recommended_items_list(path_items, rec_items)

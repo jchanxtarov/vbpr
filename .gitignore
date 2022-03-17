@@ -3,6 +3,7 @@ memo.md
 todo.md
 test.ipynb
 src/datasets/amazon-fashion/itemid2imgfeat.pkl
+downloader.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -21,8 +21,20 @@ def parse_args():
     parser.add_argument(
         '--dataset',
         type=str,
-        default='amazon-fashion',
+        default='sample',
         help='Select the target dataset.',
+    )
+    parser.add_argument(
+        '--type_img',
+        type=str,
+        default='.jpg',
+        help='Select type of image.',
+    )
+    parser.add_argument(
+        '--num_workers',
+        type=int,
+        default=0,
+        help='Select num workers in dataloader (ref | local: 0, cloud: 2).',
     )
     parser.add_argument(
         '--model',
@@ -36,13 +48,13 @@ def parse_args():
     parser.add_argument(
         '--epochs',
         type=int,
-        default=50,
+        default=10,
         help='Set max epochs.'
     )
     parser.add_argument(
         '--batch_size',
         type=int,
-        default=256,
+        default=3,
         help='Set batch size.'
     )
     parser.add_argument(
@@ -60,7 +72,7 @@ def parse_args():
     parser.add_argument(
         '--top_ks',
         nargs='?',
-        default='[20, 60, 100]',
+        default='[1, 3, 5]',
         help='Set top_ks as list.'
     )
     parser.add_argument(
